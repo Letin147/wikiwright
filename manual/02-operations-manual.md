@@ -257,13 +257,31 @@ wikiwright status 2>/dev/null || true   # 缓存与成本在预算内
 
 | 类别 | 清单 |
 |---|---|
-| 模型（角色路由） | **百度优先（用户指定）**：飞桨 AI Studio 官方 OpenAI 兼容端点 `aistudio.baidu.com/llm/lmapi/v3`（`ERNIE_MODEL=ernie-5.0-thinking-preview` 主力档；便宜档待额度恢复后核对模型列表）；DeepSeek / 智谱为备选档；Critic 温度 0；嵌入 bge-small ONNX |
+| 模型（角色路由） | **成本-质量平衡（2026-10-28 定，DeepSeek 实测后）**：主力 `deepseek-flash`（V4.1，1M 上下文，支持图片输入，effort 旋钮）承担 95%+ 调用；`deepseek-v4-pro` 仅用于 Critic 驳回复议等争议场景（<5%）；百度 AI Studio 为备选（额度耗尽待充值）；嵌入 bge-small ONNX。分角色配置见下方「成本-质量路由表」 |
 | 框架 | LangGraph 1.x、LangChain(I/O)、typer/rich/textual、FastAPI、MCP 官方 SDK(v2)、tree-sitter(可选) |
 | 平台 | GitHub、PyPI、HF Space、Gitee、五首发渠道（plan §2.4） |
 | 账号密钥 | GitHub PAT、LLM API key、HF token、PyPI token（全部环境变量/Secrets，永不入库） |
 | 数据 | 金仓库×3、WikiBench(30→100)、badcase 库（`manual/04` §8） |
 
-**供应商与隐私铁律（2026-10-28 定，用户指令）**：① LLM 供应商优先级 = 百度 AI Studio > DeepSeek > 智谱；② AI Studio Access Token 属个人隐私，只允许存在于本地 `.env`（gitignore）与 CI Secrets，任何文档/日志/代码中只可出现脱敏形式（如 `…86a9`）；③ 明文 HTTP 第三方中转通道**永久禁用**；④ 推送前脱敏由 CI gitleaks 全历史扫描强制（manual §7 检查方式见 C-12）。
+**供应商与隐私铁律（2026-10-28 定，用户指令）**：① LLM 供应商优先级 = DeepSeek（主力）> 百度 AI Studio（备选，额度耗尽待充值）> 智谱（预留）；② API key / Access Token 属个人隐私，只允许存在于本地 `.env`（gitignore）与 CI Secrets，任何文档/日志/代码中只可出现脱敏形式（如 `…86a9`）；③ 明文 HTTP 第三方中转通道**永久禁用**；④ 推送前脱敏由 CI gitleaks 全历史扫描强制（manual §7 检查方式见 C-12）。
+
+**成本-质量路由表（EXP-03 模型路由的实现规格）**：
+
+| 角色 | 模型 | effort | 温度 | max_tokens 预算 | 说明 |
+|---|---|---|---|---|---|
+| Scout / Curator | 规则为主 | — | — | — | 尽量零 LLM |
+| Cartographer（模块命名） | flash | low | 0 | 0.3K/模块 | 命名任务不需要深思 |
+| Analyst（结构化抽取） | flash | low | ≤0.3 | 3K/模块 | 质量靠 Critic 闭环，不靠升档模型 |
+| Historian / Sentinel | flash | low | 0 | 1.5K | 摘要与解释 |
+| Scribe（写作） | flash | high | 0.3 | 4K/页 | 质量投入主力点 |
+| Critic（初核） | flash | low | 0 | 1.5K/批 | 检索+AST 双通道辅助判断 |
+| Critic（驳回复议） | v4-pro | 默认 | 0 | 3K/条 | 唯一重模型场景，仅争议论断 |
+
+**成本战术六条**：① **Flash-first**——flash 扛 95%+ 调用，v4-pro 仅争议复议；② **前缀缓存**——提示词「系统角色 + 仓库上下文」作稳定前缀、任务指令放尾部，吃满 API cache-hit（命中价约为未命中的 1/50）；③ **错峰半价**——全量/定时增量安排在错峰窗口（如 UTC 13:00 = 北京 21:00；避开 UTC 01:00–04:00 与 06:00–10:00 高峰即北京工作时段）；④ **增量优先**——diff 感知重分析（v0.2 门禁 ≤30% 成本）+ 内容寻址缓存（代码未变零重跑）；⑤ **--budget 硬熔断**——单次运行费用上限，超限即停并产出部分结果；⑥ **effort 旋钮**——低代价控制推理深度（2026-10-28 实测 effort=low 时 reasoning_tokens 仅 12）。
+
+**质量保证（平衡的另一侧）**：温度锁定（Critic=0）+ pydantic 契约校验 + 证据 grounding 闭环——策略是「**模型便宜 + 验证严格**」，不是「模型贵 + 验证缺失」。
+
+**定价与实测锚点**：以[官方 pricing 页](https://api-docs.deepseek.com/quick_start/pricing)为准（2026-10-28 抓取：flash 峰时输入命中 $0.006 / 未命中 $0.30 / 输出 $1.20 每百万 token，错峰一律半价）。2026-10-28 两次探测调用共 ~98 tokens（成本可忽略）；首次真实全量锻造的成本在 EXP-05 后实测记录进 worklog（`--budget` 首设 ¥10/次）。
 
 ---
 
