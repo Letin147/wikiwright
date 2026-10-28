@@ -190,15 +190,16 @@
 | 日期 | 阶段 | 完成事项 | 证据/产物 | 下一步 |
 |---|---|---|---|---|
 | 2026-10-28 | 立项 | 多平台调研、五候选评分、两轮深查终选 WikiWright；四文档管理体系建立 | `docs/` 两报告；`plan/` `manual/` `prompts/` `reports/` 域就位 | W1 前置：注册核对 §2.3 账号；通读 `manual/02` 约束清单 |
+| 2026-10-28 | W1 前置（提前） | **EXP-01 完成**：26 文件骨架 + CI 矩阵 + CLI；验收四件套全绿；git main 分支 6 个 conventional commits；环境适配完成（conda lumin=Py3.11.14 作 uv 解释器、中文路径 `--no-editable` 方案） | `reports/01-worklog.md` EXP-01 条目（含 4 坑记录）；`git log` | 补账号缺口 → EXP-02 Scout |
 | | | | | |
 
 ---
 
 ## 9. 下一步行动（Next Actions，≤3 条，随时覆盖）
 
-1. **[2026-11-01 前]** 核对 §2.3 账号与 API key，充值首月预算 ¥150；通读 `manual/02-operations-manual.md` 全文一遍。
-2. **[W1 周一]** 执行 `prompts/03` 的 **EXP-01**（仓库骨架初始化），完成后按模板写 `reports/01-worklog.md` 第一条实验记录。
-3. **[W1 周日]** 首次周自审，更新本文件 §8。
+1. **[2026-11-01 前]** 补齐账号缺口（本次核对结论）：① **LLM API key**（GLM/DeepSeek/百炼任一，充值首月预算 ≤¥150，EXP-03 起必需）；② **gh CLI**（`winget install GitHub.cli` 后 `gh auth login`，建远端仓库/推送用）；③ Hugging Face 账号（W4 demo 前完成即可）；④ PyPI 账号（W2 发 v0.1.0 前完成即可）。密钥只进环境变量，永不入库（C-12）。
+2. **[W1]** 执行 **EXP-02**（Scout 摄取管线，指令在 `prompts/03` §3）：对 3 个金仓库跑通摄取；完成后按模板记录进 `reports/01`。
+3. **[W1 周日]** 首次周自审：对照 W1 DoD 打勾 → 更新本文件 §8 → 目录卫生三命令（`manual/02` §12）。
 
 ---
 
