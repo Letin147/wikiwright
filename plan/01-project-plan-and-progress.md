@@ -193,15 +193,16 @@
 | 2026-10-28 | W1 前置（提前） | **EXP-01 完成**：26 文件骨架 + CI 矩阵 + CLI；验收四件套全绿；git main 分支 6 个 conventional commits；环境适配完成（conda lumin=Py3.11.14 作 uv 解释器、中文路径 `--no-editable` 方案） | `reports/01-worklog.md` EXP-01 条目（含 4 坑记录）；`git log` | 补账号缺口 → EXP-02 Scout |
 | 2026-10-28 | W1 前置（提前） | **EXP-01 完全收官**：gh 登录（Letin147）✔；远端 https://github.com/Letin147/wikiwright 建立并推送 ✔；**CI 10/10 全绿**；DeepSeek key 实测无效已标注（待办有效 key） | `reports/01-worklog.md` 当日第二条；GitHub Actions run 40695897565 | 办有效 LLM key → EXP-02 |
 | 2026-10-28 | W1（提前） | **EXP-02 完成**：Scout 摄取管线（克隆/过滤/AST 分块/内容寻址缓存/FTS5）；金仓库三仓验收全过（缓存命中提速 ~1000×，license/FTS/块数全达标）；修复 BSD 无字样识别与跨 source 块碰撞两个缺陷；pytest 15 绿 | `reports/01-worklog.md` EXP-02 条目 | EXP-03 Cartographer 模块地图 |
+| 2026-10-28 | W2（提前） | **EXP-03 完成**：模型路由层（ADR-0001）+ Cartographer 模块地图 + `forge --map` 接通；金仓库验收全过（命名质量高、C-09 确定性零调用、环检测如实）；**首次真实计费 ≈¥0.02**（预算 0.2%）；修复 RemoteDisconnected 击穿/thinking 截断/docs 噪声三坑；pytest 26 绿 | `reports/01-worklog.md` EXP-03 条目 | EXP-04 Analyst |
 | | | | | |
 
 ---
 
 ## 9. 下一步行动（Next Actions，≤3 条，随时覆盖）
 
-1. **[W2]** 执行 **EXP-03**（Cartographer 模块地图，指令在 `prompts/03` §3）：AST import 解析 → 模块依赖图 → LLM 仅做模块业务命名（deepseek-flash，effort=low，温度 0，按 manual/02 §15 路由表）；验收 = flask 的 ModuleMap 正确识别核心模块 + 金仓库两次运行 diff 为空（C-09）。**首次真实计费调用，同步落地 --budget 熔断思路。**
-2. **[EXP-03 顺带]** `forge` 命令接通 `ingest_repo`（CLI 真实可摄取，首条 demo 素材）。
-3. **[W1 周日 11-08]** 首次周自审：W1 DoD 已提前达成（EXP-01/02 ✔）→ 更新本文件 §8 → 目录卫生三命令（`manual/02` §12）→ `git push`。
+1. **[W2]** 执行 **EXP-04**（Analyst map-reduce 深读，指令在 `prompts/03` §3）：逐模块结构化抽取（职责/关键实体/接口/关系，每条结论带 `[path:symbol]` 引用）；pydantic 契约校验失败→修复式重试→降级标记。**坑预警（EXP-03 教训）**：max_tokens 给 thinking 推理留足余量（≥1024 起）；首次全量计费跑 flask，--budget 严盯。
+2. **[W2]** **EXP-05**（Scribe 撰写）：wiki/ vault 渲染（index/modules/architecture mermaid），引用锚 `commit:path:symbol`——v0.1.0 发布目标（PyPI 账号此时必须就位）。
+3. **[W1 周日 11-08]** 周自审：§8 更新 + 目录卫生三命令 + `git push`（含此前积压提交）。
 
 ---
 

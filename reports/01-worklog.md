@@ -106,4 +106,22 @@
   2. **跨 source 块碰撞**：`chunk_id` 原为路径+内容哈希，不含 source——两个仓库含相同内容文件时后写者覆盖前者的行（实测 click 622→621 静默丢块）→ 行键改 `source:chunk_id` 复合键 + 回归测试，三仓块数跨轮稳定 ✔。此坑对未来「多仓库知识网格」是地基级修复。
 - **下一步（≤2 条）**：① EXP-03 Cartographer 模块地图（LLM 仅命名，便宜档 effort=low）；② 顺带把 `forge` 命令接到 `ingest_repo`（EXP-05 前的过渡）。
 
+### EXP-03：Cartographer 模块地图 + 模型路由层（2026-10-28，首次真实计费调用）
+
+- **目标**：AST import 图 + 角色标注 + 环检测 + 目录聚类，LLM 仅做聚类业务命名；`forge` 接通 `ingest_repo`。
+- **实现**：`models/router.py`（标准库 http，ADR-0001，零新依赖；成本按峰时价折算 + `WIKIWRIGHT_BUDGET_CNY=10` 熔断，`.env` 自动加载）；`agents/cartographer.py`（文件级 import 图：AST 解析、最长前缀解析、入/出度角色、DFS 环检测、目录聚类；命名缓存于 `.cache/maps/<slug>.json` 保证 C-09）；CLI `forge <src> --map [--offline]`。
+- **验收结果（金仓库，全过）**：
+  - flask：24 文件/102 边/15 core/2 entry/40 cycles，聚类命名 `Web应用框架|web-application-framework`、`JSON 序列化`、`无I/O应用核心`；click：`命令行界面框架|cli-framework`；httpx：`HTTP客户端核心` + `传输层|transports`；
+  - **C-09 确定性**：二次运行 map JSON 字节级一致，**零 LLM 调用**（名字按聚类文件集缓存）；
+  - 环检测如实报告（flask 40 个真实环，`__init__ ↔ app` 等，非缺陷）；
+  - 测试 **26 passed** + ruff/import-linter 绿；CLI 演示：`forge --map` 缓存命中 0.062s 全业务名落地。
+- **成本（真实计费）**：全程约 12 次调用 ≈ **¥0.02**（budget ¥10 内的 0.2%）——成本-质量路由表（manual/02 §15）首次实战验证。
+- **是否正收益**：是。验收暴露三个真问题并全部修复（见下）。
+- **问题与坑（3 个，均已修复）**：
+  1. **RemoteDisconnected 击穿重试**：该异常属 `http.client.HTTPException` 而非 `URLError`，DeepSeek 连接瞬断直接裸抛 → 重试捕获族扩为 `(OSError, HTTPException)`；
+  2. **thinking 模型 max_tokens 截断**（最重要）：推理内容先烧 completion 预算，256 上限时验收中 3 个聚类返回空 content（debug 实测一次刚好 250/256 贴线）→ 命名改 256/1024 双档自愈重试。**EXP-04 Analyst 的 max_tokens 必须给推理留足余量，router 后续应透出 finish_reason**；
+  3. **图混入 docs/examples 噪声**：flask 曾出现 8 个聚类（6 个是 docs/examples）→ Cartographer 排除集增加 `docs/examples/benchmarks`（摄取层保留它们供 wiki 引用，地图层只描述产品代码）；
+  4. 阈值实证调整：core 判定 in_degree≥3（曾 2 时 flask 63% 文件都算 core）；`__init__.py` 聚合器直接判 core；EXP 指令中 routing.py/wsgi.py 在 flask 3.x 已并入 app.py/不存在，验收按现代布局解释（app.py 为 core ✔ `__main__.py` 为 entry ✔）。
+- **下一步（≤2 条）**：① EXP-04 Analyst map-reduce 深读（结构化抽取契约 + 重试降级 + --budget 实战）；② 把「completion 预算-推理余量」教训写进 prompts/03 的 EXP-04 指令。
+
 <!-- 新条目从这里向下追加 -->
