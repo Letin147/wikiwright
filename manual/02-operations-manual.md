@@ -257,11 +257,13 @@ wikiwright status 2>/dev/null || true   # 缓存与成本在预算内
 
 | 类别 | 清单 |
 |---|---|
-| 模型（角色路由） | Cartographer/Historian/Sentinel→便宜档(GLM-4-Flash 级)；Analyst/Scribe/Critic→主力档(GLM-4.x/DeepSeek 级，Critic 温度 0)；Curator→规则+便宜档；嵌入 bge-small ONNX |
+| 模型（角色路由） | **百度优先（用户指定）**：飞桨 AI Studio 官方 OpenAI 兼容端点 `aistudio.baidu.com/llm/lmapi/v3`（`ERNIE_MODEL=ernie-5.0-thinking-preview` 主力档；便宜档待额度恢复后核对模型列表）；DeepSeek / 智谱为备选档；Critic 温度 0；嵌入 bge-small ONNX |
 | 框架 | LangGraph 1.x、LangChain(I/O)、typer/rich/textual、FastAPI、MCP 官方 SDK(v2)、tree-sitter(可选) |
 | 平台 | GitHub、PyPI、HF Space、Gitee、五首发渠道（plan §2.4） |
 | 账号密钥 | GitHub PAT、LLM API key、HF token、PyPI token（全部环境变量/Secrets，永不入库） |
 | 数据 | 金仓库×3、WikiBench(30→100)、badcase 库（`manual/04` §8） |
+
+**供应商与隐私铁律（2026-10-28 定，用户指令）**：① LLM 供应商优先级 = 百度 AI Studio > DeepSeek > 智谱；② AI Studio Access Token 属个人隐私，只允许存在于本地 `.env`（gitignore）与 CI Secrets，任何文档/日志/代码中只可出现脱敏形式（如 `…86a9`）；③ 明文 HTTP 第三方中转通道**永久禁用**；④ 推送前脱敏由 CI gitleaks 全历史扫描强制（manual §7 检查方式见 C-12）。
 
 ---
 

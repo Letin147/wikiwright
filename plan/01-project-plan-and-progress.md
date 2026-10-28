@@ -198,7 +198,7 @@
 
 ## 9. 下一步行动（Next Actions，≤3 条，随时覆盖）
 
-1. **[EXP-03 前，最迟 W2]** 办一张**有效的 LLM API key**（三选一：DeepSeek 重办 platform.deepseek.com / 智谱 bigmodel.cn / 阿里百炼，充值 ≤¥150）。旧 key 已实测无效（见 worklog 2026-10-28）。填入 `.env` 对应行并取消注释。HF 账号 W4 前、PyPI 账号 W2 发版前补齐即可。
+1. **[EXP-03 前，最迟 W2]** LLM 供应商收尾（二选一）：① **首选（百度优先，用户指定）**：到 aistudio.baidu.com 充值算力点恢复 `ERNIE_API_KEY` 额度——端点/鉴权/调用方式已实测就绪（OpenAI 兼容），充值即用；② 备选：智谱 bigmodel.cn（注册有免费额度）或 DeepSeek 重办。取到可用 key 填 `.env` 对应行。HF 账号 W4 前、PyPI 账号 W2 发版前补齐即可。
 2. **[W1]** 执行 **EXP-02**（Scout 摄取管线，无需 LLM；指令在 `prompts/03` §3）：对 `pallets/click`、`pallets/flask`、`encode/httpx` 跑通克隆→过滤→分块→FTS5；完成后按模板记录进 `reports/01`。
 3. **[W1 周日]** 首次周自审：对照 W1 DoD 打勾 → 更新本文件 §8 → 目录卫生三命令（`manual/02` §12）→ `git push`。
 
