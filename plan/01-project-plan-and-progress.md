@@ -191,15 +191,16 @@
 |---|---|---|---|---|
 | 2026-10-28 | 立项 | 多平台调研、五候选评分、两轮深查终选 WikiWright；四文档管理体系建立 | `docs/` 两报告；`plan/` `manual/` `prompts/` `reports/` 域就位 | W1 前置：注册核对 §2.3 账号；通读 `manual/02` 约束清单 |
 | 2026-10-28 | W1 前置（提前） | **EXP-01 完成**：26 文件骨架 + CI 矩阵 + CLI；验收四件套全绿；git main 分支 6 个 conventional commits；环境适配完成（conda lumin=Py3.11.14 作 uv 解释器、中文路径 `--no-editable` 方案） | `reports/01-worklog.md` EXP-01 条目（含 4 坑记录）；`git log` | 补账号缺口 → EXP-02 Scout |
+| 2026-10-28 | W1 前置（提前） | **EXP-01 完全收官**：gh 登录（Letin147）✔；远端 https://github.com/Letin147/wikiwright 建立并推送 ✔；**CI 10/10 全绿**；DeepSeek key 实测无效已标注（待办有效 key） | `reports/01-worklog.md` 当日第二条；GitHub Actions run 40695897565 | 办有效 LLM key → EXP-02 |
 | | | | | |
 
 ---
 
 ## 9. 下一步行动（Next Actions，≤3 条，随时覆盖）
 
-1. **[2026-11-01 前]** 补齐账号缺口（本次核对结论）：① **LLM API key**（GLM/DeepSeek/百炼任一，充值首月预算 ≤¥150，EXP-03 起必需）；② **gh CLI**（`winget install GitHub.cli` 后 `gh auth login`，建远端仓库/推送用）；③ Hugging Face 账号（W4 demo 前完成即可）；④ PyPI 账号（W2 发 v0.1.0 前完成即可）。密钥只进环境变量，永不入库（C-12）。
-2. **[W1]** 执行 **EXP-02**（Scout 摄取管线，指令在 `prompts/03` §3）：对 3 个金仓库跑通摄取；完成后按模板记录进 `reports/01`。
-3. **[W1 周日]** 首次周自审：对照 W1 DoD 打勾 → 更新本文件 §8 → 目录卫生三命令（`manual/02` §12）。
+1. **[EXP-03 前，最迟 W2]** 办一张**有效的 LLM API key**（三选一：DeepSeek 重办 platform.deepseek.com / 智谱 bigmodel.cn / 阿里百炼，充值 ≤¥150）。旧 key 已实测无效（见 worklog 2026-10-28）。填入 `.env` 对应行并取消注释。HF 账号 W4 前、PyPI 账号 W2 发版前补齐即可。
+2. **[W1]** 执行 **EXP-02**（Scout 摄取管线，无需 LLM；指令在 `prompts/03` §3）：对 `pallets/click`、`pallets/flask`、`encode/httpx` 跑通克隆→过滤→分块→FTS5；完成后按模板记录进 `reports/01`。
+3. **[W1 周日]** 首次周自审：对照 W1 DoD 打勾 → 更新本文件 §8 → 目录卫生三命令（`manual/02` §12）→ `git push`。
 
 ---
 

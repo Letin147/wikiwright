@@ -8,10 +8,10 @@
 
 ## 当前状态（短期工作记忆，每次收工前更新，新会话开场必读）
 
-- **进度**：EXP-01 完成（2026-10-28，早于八周路线的 W1 起点）。骨架+CI+CLI 就位，验收四件套全绿，git 6 个提交在 main。
-- **卡点**：无技术卡点。账号缺口未补（LLM API key、gh CLI、HF、PyPI）——EXP-02/03 前必须补 LLM key 与 gh。
-- **下一步一句话**：补齐账号清单 → 执行 EXP-02（Scout 摄取管线）。
-- **本机适配备忘**：中文路径环境必须 `uv sync --no-editable` + `uv run --no-sync`（原因见 EXP-01 坑 2）；直连 PyPI 不稳时重试 `uv sync`（增量缓存，见坑 1）。
+- **进度**：EXP-01 **完全收官**（2026-10-28）：本地验收四件套全绿 + GitHub CI 10/10 job 全绿；远端 https://github.com/Letin147/wikiwright（gh 账号 Letin147）。
+- **卡点**：LLM API key 未落实——旧项目 .env 里的 DeepSeek key 实测无效（authentication_error，已在 .env 中注释并注明）。**EXP-03（W2）前必须办有效 key**（DeepSeek 重办 / 智谱 / 百炼任一）。HF 与 PyPI 账号分别 W4 / W2 前补。
+- **下一步一句话**：办有效 LLM key → 执行 EXP-02（Scout 摄取管线，无需 LLM）。
+- **本机适配备忘**：中文路径环境必须 `uv sync --no-editable` + `uv run --no-sync`；PyPI 直连不稳时重试 `uv sync`；gh 命令前 `unset GITHUB_TOKEN`（本环境注入的无效 token 会覆盖 keyring 登录）。
 
 ---
 
@@ -48,5 +48,20 @@
 - 完成：四文档管理体系 + 域隔离结构落地：`plan/01`（八周路线+GitHub 管理）、`manual/02`（约束 C-01~C-20+成功指标+日志规范）、`prompts/03`（EXP-01~10 指令）、`manual/04`（Agent 工程 playbook）；本日志卷开卷。
 - 是否正收益：是——「小白如何管理生产一个项目」从口头约定变成可执行流程（每日四步仪式 / 每周自审 / 1500 行滚动 / 三次法则沉淀）。
 - 下一步：见「当前状态」块。
+
+### 2026-10-28 · 账号密钥核对 + EXP-01 远端收官（阶段：W1 前置）
+
+- **目标**：核对账号与 API key；完成 EXP-01 最后一项验收（推送 + CI 全绿）。
+- **过程与结果（逐项）**：
+  1. gh CLI 登录 ✔（账号 **Letin147**，keyring，HTTPS，scopes 含 repo+workflow）；
+  2. `.env` 密钥核对：旧项目示例文件中的 **DeepSeek key（…86a9）实测无效**（官方 `/models` 端点返回 authentication_error）——如实记录，已在 .env 注释；其余条目（ERNIE 明文 http 中转、Langfuse 云端密钥、百度 OCR 等）属旧项目，已从本仓库 .env 移除；
+  3. `.env` 已最小化为 WikiWright 专用（gitignore 验证生效，untracked ✔）；
+  4. 误入目录的空文件 `toke百度.txt`（0 字节）已清除（卫生规则）；
+  5. 远端创建 + 推送 ✔ → https://github.com/Letin147/wikiwright ；
+  6. **CI 10/10 全绿**：ubuntu/macos/windows × py3.10/3.11/3.12 全过 + Directory hygiene job 通过。
+- **成本**：LLM 0；全程约 20 分钟。
+- **是否正收益**：是——EXP-01 全部验收项（含 CI）达成；密钥无效被及时证实，避免 W2 才发现。
+- **问题与坑**：本环境注入的 `GITHUB_TOKEN` 无效且会覆盖 gh keyring——所有 gh/git push 命令前需 `unset GITHUB_TOKEN`（已记入备忘）。
+- **下一步（≤2 条）**：① 办有效 LLM key（DeepSeek 重办 / 智谱 / 百炼，EXP-03 前）；② 执行 EXP-02 Scout（无需 LLM）。
 
 <!-- 新条目从这里向下追加 -->
