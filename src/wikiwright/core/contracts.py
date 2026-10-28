@@ -26,3 +26,33 @@ class IngestResult(Contract):
     chunks: int = 0
     cache_hit: bool = False
     duration_s: float = 0.0
+
+
+class FileNode(Contract):
+    """One python file in the import graph (EXP-03)."""
+
+    path: str
+    in_degree: int = 0
+    out_degree: int = 0
+    role: str = "peripheral"  # entry | core | peripheral
+
+
+class Cluster(Contract):
+    """A directory-level business module; the only place LLM is allowed (naming)."""
+
+    dir_path: str
+    files: list[str]
+    business_name: str = ""
+    name_grounded: bool = False
+
+
+class ModuleMap(Contract):
+    """Cartographer output: file-level import graph + named directory clusters."""
+
+    source: str
+    nodes: list[FileNode]
+    edges: list[tuple[str, str]]  # (importer, imported) relative paths
+    clusters: list[Cluster]
+    entry_candidates: list[str]
+    core_files: list[str]
+    cycles: list[list[str]] = []
