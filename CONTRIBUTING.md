@@ -24,6 +24,14 @@ uv run pytest
 uv run lint-imports
 ```
 
+**Windows + 含中文/非 ASCII 路径的仓库目录**：可编辑安装生成的 `.pth` 文件会被中文系统
+Python 以 GBK 解码，导致解释器启动崩溃（EXP-01 实测）。适配方案——用非可编辑安装 + 免同步执行：
+
+```bash
+uv sync --no-editable --reinstall-package wikiwright   # 安装真实副本（每次改完代码后重跑，秒级）
+uv run --no-sync wikiwright --version                  # 日常命令统一带 --no-sync
+```
+
 ## 分支与提交
 
 - 分支模型：trunk-based。`feat/ww-<slug>` / `fix/ww-<slug>`，存活 ≤3 天，从 `main` 拉出、合回 `main`。
