@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
-wikiwright = "wikiwright.cli.app:main"
+wikiwright = "wikiwright.cli.app:app"
 
 [dependency-groups]
 dev = [
@@ -45,7 +45,7 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.ruff.lint.flake8-bugbear]
 # typer 的设计就是把 Option/Argument 放在默认值里，B008 豁免
-extend-allowed-calls = ["typer.Option", "typer.Argument"]
+extend-immutable-calls = ["typer.Option", "typer.Argument"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

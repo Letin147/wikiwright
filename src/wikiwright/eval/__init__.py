@@ -1,1 +1,1 @@
-"""Evaluation: WikiBench pipeline, metrics (Grounding Precision, QA Accuracy, Update Cost), ablations (EXP-10)."""
+"""Evaluation: WikiBench pipeline, metrics (Grounding, QA, Update Cost), ablations (EXP-10)."""

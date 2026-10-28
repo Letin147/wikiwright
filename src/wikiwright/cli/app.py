@@ -11,13 +11,23 @@ app = typer.Typer(
 )
 
 
+def _print_version(value: bool) -> None:
+    if value:
+        typer.echo(f"wikiwright {__version__}")
+        raise SystemExit(0)
+
+
 @app.callback()
 def main(
-    version: bool = typer.Option(False, "--version", help="Print version and exit."),
+    version: bool = typer.Option(
+        False,
+        "--version",
+        help="Print version and exit.",
+        callback=_print_version,
+        is_eager=True,
+    ),
 ) -> None:
-    if version:
-        typer.echo(f"wikiwright {__version__}")
-        raise typer.Exit()
+    """WikiWright — an agent crew that forges a living wiki for your codebase."""
 
 
 @app.command()
