@@ -192,15 +192,16 @@
 | 2026-10-28 | 立项 | 多平台调研、五候选评分、两轮深查终选 WikiWright；四文档管理体系建立 | `docs/` 两报告；`plan/` `manual/` `prompts/` `reports/` 域就位 | W1 前置：注册核对 §2.3 账号；通读 `manual/02` 约束清单 |
 | 2026-10-28 | W1 前置（提前） | **EXP-01 完成**：26 文件骨架 + CI 矩阵 + CLI；验收四件套全绿；git main 分支 6 个 conventional commits；环境适配完成（conda lumin=Py3.11.14 作 uv 解释器、中文路径 `--no-editable` 方案） | `reports/01-worklog.md` EXP-01 条目（含 4 坑记录）；`git log` | 补账号缺口 → EXP-02 Scout |
 | 2026-10-28 | W1 前置（提前） | **EXP-01 完全收官**：gh 登录（Letin147）✔；远端 https://github.com/Letin147/wikiwright 建立并推送 ✔；**CI 10/10 全绿**；DeepSeek key 实测无效已标注（待办有效 key） | `reports/01-worklog.md` 当日第二条；GitHub Actions run 40695897565 | 办有效 LLM key → EXP-02 |
+| 2026-10-28 | W1（提前） | **EXP-02 完成**：Scout 摄取管线（克隆/过滤/AST 分块/内容寻址缓存/FTS5）；金仓库三仓验收全过（缓存命中提速 ~1000×，license/FTS/块数全达标）；修复 BSD 无字样识别与跨 source 块碰撞两个缺陷；pytest 15 绿 | `reports/01-worklog.md` EXP-02 条目 | EXP-03 Cartographer 模块地图 |
 | | | | | |
 
 ---
 
 ## 9. 下一步行动（Next Actions，≤3 条，随时覆盖）
 
-1. ~~LLM 供应商~~ **已闭环（2026-10-28）**：DeepSeek 新 key 实测通过（鉴权/对话/effort 旋钮），`deepseek-flash` 主力 + `v4-pro` 重案档，成本-质量路由表落进 manual/02 §15；百度 AI Studio 留作备选（额度耗尽，充值即用）。HF 账号 W4 前、PyPI 账号 W2 发版前补齐即可。
-2. **[W1]** 执行 **EXP-02**（Scout 摄取管线，无需 LLM；指令在 `prompts/03` §3）：对 `pallets/click`、`pallets/flask`、`encode/httpx` 跑通克隆→过滤→分块→FTS5；完成后按模板记录进 `reports/01`。
-3. **[W1 周日]** 首次周自审：对照 W1 DoD 打勾 → 更新本文件 §8 → 目录卫生三命令（`manual/02` §12）→ `git push`。
+1. **[W2]** 执行 **EXP-03**（Cartographer 模块地图，指令在 `prompts/03` §3）：AST import 解析 → 模块依赖图 → LLM 仅做模块业务命名（deepseek-flash，effort=low，温度 0，按 manual/02 §15 路由表）；验收 = flask 的 ModuleMap 正确识别核心模块 + 金仓库两次运行 diff 为空（C-09）。**首次真实计费调用，同步落地 --budget 熔断思路。**
+2. **[EXP-03 顺带]** `forge` 命令接通 `ingest_repo`（CLI 真实可摄取，首条 demo 素材）。
+3. **[W1 周日 11-08]** 首次周自审：W1 DoD 已提前达成（EXP-01/02 ✔）→ 更新本文件 §8 → 目录卫生三命令（`manual/02` §12）→ `git push`。
 
 ---
 

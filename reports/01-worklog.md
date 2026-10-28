@@ -90,4 +90,20 @@
 - **是否正收益**：是——供应商彻底闭环，成本结构有实测依据，EXP-03 的模型路由有了完整实现规格。
 - **下一步（≤2 条）**：① EXP-02 Scout 摄取管线（无 LLM 依赖）；② EXP-03 模型路由按 §15 路由表实现（含 effort/温度/max_tokens 三控）。
 
+### EXP-02：Scout 摄取管线（2026-10-28）
+
+- **目标**：`ingest_repo(source, cache_dir) -> IngestResult`：浅克隆（镜像支持）→ 过滤 → AST 分块 → 内容寻址缓存 → SQLite FTS5。零 LLM。
+- **实现**：`ingest/` 7 文件（source/clone/filters/chunker/store/ingest/__init__）+ `IngestResult` 契约入 `core/contracts.py`；Python 文件按顶层 class/def 边界分块（>6000 字符降级滑窗，SyntaxError 显式回退）；行键 `source:chunk_id`。
+- **验收结果（金仓库，全过）**：
+  - 摄取：click 168 文件/622 chunks、flask 227/496、httpx 117/298（首跑含克隆 17–59s；本地重建索引 0.3–0.7s）；
+  - 缓存：三仓二次运行 `cache_hit=True`，0.009–0.015s（提速约 1000×，零重分析成本 ✔）；
+  - FTS：`decorator`@click 命中 `src/click/decorators.py:100`、@flask 命中 `docs/patterns/viewdecorators.rst`；httpx 无该词（其文档在独立仓库），换 `transport` 命中 `httpx/_client.py:1397` ✔；
+  - 测试：**15 passed**（4 文件全 mock 无网络）+ ruff/import-linter 绿。
+- **成本**：LLM 0 调用；网络 3 次浅克隆。
+- **是否正收益**：是——全部验收达标，且发现并修复两个真实缺陷。
+- **问题与坑（2 个，均已修复+回归测试）**：
+  1. **BSD 无字样文本**：pallets/httpx 的 LICENSE 均为无 "BSD" 字样的标准授权文本（"Redistribution and use in source and binary forms"），首轮三仓全部识别为 None → 补充惯用句式模式，复测全部 `bsd` ✔；
+  2. **跨 source 块碰撞**：`chunk_id` 原为路径+内容哈希，不含 source——两个仓库含相同内容文件时后写者覆盖前者的行（实测 click 622→621 静默丢块）→ 行键改 `source:chunk_id` 复合键 + 回归测试，三仓块数跨轮稳定 ✔。此坑对未来「多仓库知识网格」是地基级修复。
+- **下一步（≤2 条）**：① EXP-03 Cartographer 模块地图（LLM 仅命名，便宜档 effort=low）；② 顺带把 `forge` 命令接到 `ingest_repo`（EXP-05 前的过渡）。
+
 <!-- 新条目从这里向下追加 -->
