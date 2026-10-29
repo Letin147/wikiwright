@@ -48,3 +48,21 @@ def test_identical_content_in_two_sources_does_not_collide(tmp_path):
     hits = store.search("demo", source="a/one")
     assert len(hits) == 1
     store.close()
+
+
+def test_chunks_for_path_returns_text_in_order(tmp_path):
+    store = ChunkStore(tmp_path / "t.db")
+    store.replace_file_chunks(
+        "s",
+        "a.py",
+        "h1",
+        [
+            _chunk("a.py", "header imports here"),
+            _chunk("a.py", "def util():\n    return 1"),
+        ],
+    )
+    chunks = store.chunks_for_path("s", "a.py")
+    assert [c["start_line"] for c in chunks] == [1, 1]  # test chunks share the span
+    texts = "\n".join(c["text"] for c in chunks)
+    assert "imports" in texts and "util" in texts
+    store.close()

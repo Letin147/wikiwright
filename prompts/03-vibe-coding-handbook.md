@@ -81,6 +81,8 @@ LLM 仅用于给模块起"业务名"（便宜档，温度 0）。
 
 ### EXP-04 Analyst 深读（W2）
 
+> **2026-10-28 执行修正**：LangGraph map-reduce 编排移至 EXP-05 全管线装配时引入（单阶段加图层无 checkpoint 价值，且 SqliteSaver 需新增依赖须走 ADR）；本 EXP 以 ThreadPool 实现同等并行语义。max_tokens 预算按 EXP-03 教训上调至 2048。
+
 ```text
 【任务】实现 Analyst 的 map-reduce：对 ModuleMap 每个模块并行深读，产出结构化理解 JSON。
 每模块输出契约（pydantic 严格校验）：职责一段话；关键实体列表(名称/类型/一句话)；

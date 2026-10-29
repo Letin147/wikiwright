@@ -75,6 +75,32 @@ def forge(
 
 
 @app.command()
+def analyze(
+    source: str = typer.Argument(..., help="Repository URL, owner/name, or local path."),
+    workers: int = typer.Option(3, "--workers", help="Parallel cluster analyses."),
+    cache: str = typer.Option(".cache/wikiwright", "--cache", help="Cache directory."),
+) -> None:
+    """Deep-read every module with the Analyst (EXP-04); results are cached."""
+    from wikiwright.agents.analyst import analyze_repo
+
+    report = analyze_repo(source, cache_dir=cache, workers=workers)
+    console.print(
+        f"[green]✔[/green] analyzed [bold]{report.source}[/bold]: "
+        f"{len(report.understandings)} modules understood, {len(report.skipped)} skipped, "
+        f"{report.total_conclusions} conclusions "
+        f"({report.unsure_conclusions} unsure, {report.invalid_refs} invalid refs), "
+        f"{report.llm_calls} LLM calls, ${report.cost_usd:.5f}"
+        + (" [dim](cache hit)[/dim]" if report.cache_hit else "")
+    )
+    for understanding in report.understandings:
+        name = understanding.business_name or understanding.module
+        console.print(f"  📦 [bold]{understanding.module}[/bold] → {name}:")
+        console.print(f"     {understanding.responsibility[:120]}")
+    for item in report.skipped:
+        console.print(f"  ⚠ [yellow]{item.module}[/yellow]: {item.reason[:120]}")
+
+
+@app.command()
 def serve() -> None:
     """Start the MCP server (wiki.search/ask/get_diagram/changes) — EXP-08 (W5)."""
     typer.echo("Not implemented yet — MCP server arrives with EXP-08 (W5).")

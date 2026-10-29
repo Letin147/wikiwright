@@ -10,6 +10,7 @@ from __future__ import annotations
 import http.client
 import json
 import os
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -95,6 +96,7 @@ class LLMClient:
         )
         self.spent_usd = 0.0
         self.calls = 0
+        self._accounting = threading.Lock()  # analyst workers call chat in parallel
 
     # -- api ---------------------------------------------------------------
 
@@ -163,8 +165,9 @@ class LLMClient:
             usage.prompt_cache_hit_tokens,
             usage.completion_tokens,
         )
-        self.spent_usd += usage.cost_usd
-        self.calls += 1
+        with self._accounting:
+            self.spent_usd += usage.cost_usd
+            self.calls += 1
         return (choice.get("content") or ""), usage
 
     def summary(self) -> str:

@@ -136,6 +136,19 @@ class ChunkStore:
         self.conn.execute("DELETE FROM files WHERE source = ? AND path = ?", (source, path))
         self.conn.commit()
 
+    def chunks_for_path(self, source: str, path: str) -> list[dict]:
+        """All chunks of one file, in reading order (Analyst context source)."""
+        rows = self.conn.execute(
+            "SELECT c.start_line, c.end_line, f.text FROM chunks_fts f "
+            "JOIN chunks c ON c.chunk_id = f.chunk_id "
+            "WHERE c.source = ? AND c.path = ? ORDER BY c.start_line",
+            (source, path),
+        ).fetchall()
+        return [
+            {"start_line": start, "end_line": end, "text": text}
+            for start, end, text in rows
+        ]
+
     # -- search -----------------------------------------------------------
 
     def search(
