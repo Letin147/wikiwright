@@ -1,4 +1,4 @@
-"""CLI tests: version flag, real forge on a local dir, --map with mocked cartographer."""
+"""CLI tests: version flag, offline forge vault, analyze placeholder surface."""
 
 from pathlib import Path
 
@@ -9,14 +9,7 @@ from wikiwright.cli.app import app
 
 runner = CliRunner()
 
-
-def _mini_repo(tmp_path: Path) -> str:
-    pkg = tmp_path / "proj"
-    pkg.mkdir()
-    (pkg / "__init__.py").write_text("", encoding="utf-8")
-    (pkg / "alpha.py").write_text("VALUE = 1\n", encoding="utf-8")
-    (tmp_path / "LICENSE").write_text("MIT License\n", encoding="utf-8")
-    return str(tmp_path)
+FIXTURE = str(Path(__file__).parents[0] / "fixtures" / "mini_repo")
 
 
 def test_version_flag_prints_version():
@@ -25,42 +18,16 @@ def test_version_flag_prints_version():
     assert __version__ in result.output
 
 
-def test_forge_ingests_local_repo(tmp_path):
-    result = runner.invoke(app, ["forge", _mini_repo(tmp_path), "--cache", str(tmp_path / "c")])
-    assert result.exit_code == 0, result.output
-    assert "chunks" in result.output
-    assert "mit" in result.output
-
-
-def test_forge_map_with_mocked_cartographer(tmp_path, monkeypatch):
-    from wikiwright.agents import cartographer as cart_module
-    from wikiwright.core.contracts import Cluster, ModuleMap
-
-    def fake_cartographize(source, cache_dir=None, llm=None, offline=False):
-        return ModuleMap(
-            source=source,
-            nodes=[],
-            edges=[],
-            clusters=[
-                Cluster(
-                    dir_path="proj",
-                    files=["proj/alpha.py"],
-                    business_name="示例|demo",
-                    name_grounded=True,
-                )
-            ],
-            entry_candidates=[],
-            core_files=[],
-            cycles=[],
-        )
-
-    monkeypatch.setattr(cart_module, "cartographize", fake_cartographize)
+def test_forge_offline_produces_vault(tmp_path):
+    out = tmp_path / "vault"
     result = runner.invoke(
-        app, ["forge", _mini_repo(tmp_path), "--map", "--cache", str(tmp_path / "c")]
+        app, ["forge", FIXTURE, "--offline", "--out", str(out), "--cache", str(tmp_path / "c")]
     )
     assert result.exit_code == 0, result.output
-    assert "module map" in result.output
-    assert "示例|demo" in result.output
+    assert "vault forged" in result.output
+    for name in ("index.md", "architecture.md", "index.html"):
+        assert (out / name).exists()
+    assert any((out / "modules").glob("*.md"))
 
 
 def test_placeholder_commands_exist_and_are_honest():

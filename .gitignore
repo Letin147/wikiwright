@@ -14,11 +14,12 @@ build/
 .coverage
 htmlcov/
 
-# WikiWright 运行时产物（manual/02 约束 C-12：输出与缓存永不入库）
-.cache/
-wiki/
-wikiwright-output/
-runs/
+# WikiWright 运行时产物 —— 必须锚定仓库根！hatchling 打包遵循 .gitignore，
+# 未锚定的 wiki/ 模式曾把 src/wikiwright/wiki/ 整个包从 wheel 静默排除（EXP-05 实测教训）
+/.cache/
+/wiki/
+/wikiwright-output/
+/runs/
 
 # 密钥 —— 永不提交
 .env

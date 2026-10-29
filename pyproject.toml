@@ -13,6 +13,8 @@ dependencies = [
     "rich>=13",
     "langchain-core>=0.3",
     "langgraph>=0.2",
+    "langgraph-checkpoint-sqlite>=2.0",
+    "markdown>=3.6",
     "pydantic>=2.7",
 ]
 
@@ -39,6 +41,7 @@ packages = ["src/wikiwright"]
 line-length = 100
 target-version = "py310"
 src = ["src", "tests"]
+extend-exclude = ["tests/fixtures"]  # fixture 是测试数据，非被检代码
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

@@ -9,6 +9,7 @@ console = Console()
 
 _PLACEHOLDER = "Not implemented yet — arrives with EXP-{exp} ({week})."
 
+
 app = typer.Typer(
     name="wikiwright",
     help="⚒ WikiWright · 维匠 — an agent crew that forges a living wiki for your codebase.",
@@ -38,40 +39,25 @@ def main(
 @app.command()
 def forge(
     source: str = typer.Argument(..., help="Repository URL, owner/name, or local path."),
-    build_map: bool = typer.Option(
-        False, "--map", help="Also build the module map with Cartographer (EXP-03)."
-    ),
     offline: bool = typer.Option(
-        False, "--offline", help="Map naming without any API call (basename fallback)."
+        False, "--offline", help="No API calls: template-only vault (zero cost)."
     ),
+    out: str = typer.Option(None, "--out", help="Output directory (default wiki/<slug>)."),
     cache: str = typer.Option(".cache/wikiwright", "--cache", help="Cache directory."),
 ) -> None:
-    """Ingest a repository into the chunk store (Scout); --map adds the Cartographer."""
-    from wikiwright.ingest import ingest_repo
+    """Forge a full wiki vault: ingest -> map -> analyze -> scribe -> render."""
+    from wikiwright.graph.build import run_pipeline
+    from wikiwright.models.router import LLMError
 
-    result = ingest_repo(source, cache_dir=cache)
-    hit = " [dim](cache hit)[/dim]" if result.cache_hit else ""
-    console.print(
-        f"[green]✔[/green] ingested [bold]{result.source}[/bold]: "
-        f"{result.files_indexed} files indexed ({result.files_filtered} filtered), "
-        f"{result.chunks} chunks, license={result.license_family}, "
-        f"{result.duration_s}s{hit}"
-    )
-    if build_map:
-        from wikiwright.agents.cartographer import cartographize
-
-        module_map = cartographize(source, cache_dir=cache, offline=offline)
-        console.print(
-            f"[green]✔[/green] module map: {len(module_map.nodes)} files, "
-            f"{len(module_map.edges)} imports, {len(module_map.core_files)} core, "
-            f"{len(module_map.entry_candidates)} entry, {len(module_map.cycles)} cycles"
-        )
-        for cluster in module_map.clusters:
-            mark = "🧭" if cluster.name_grounded else "·"
-            console.print(
-                f"  {mark} [bold]{cluster.dir_path}[/bold] → "
-                f"{cluster.business_name} ({len(cluster.files)} files)"
-            )
+    try:
+        state = run_pipeline(source, cache_dir=cache, out_dir=out, offline=offline)
+    except LLMError as exc:
+        console.print(f"[red]✘ LLM unavailable:[/red] {exc}")
+        console.print("hint: set DEEPSEEK_API_KEY in .env, or rerun with --offline")
+        raise SystemExit(2) from None
+    wiki_dir = state.get("wiki_dir", "?")
+    console.print(f"[green]✔[/green] vault forged → [bold]{wiki_dir}[/bold]")
+    console.print("    open index.html (offline single file) or browse the markdown/")
 
 
 @app.command()
@@ -103,10 +89,10 @@ def analyze(
 @app.command()
 def serve() -> None:
     """Start the MCP server (wiki.search/ask/get_diagram/changes) — EXP-08 (W5)."""
-    typer.echo("Not implemented yet — MCP server arrives with EXP-08 (W5).")
+    typer.echo(_PLACEHOLDER.format(exp="08", week="W5, MCP server"))
 
 
 @app.command()
 def status() -> None:
-    """Show cache, cost, and run status — arrives with EXP-05+ (W2)."""
-    typer.echo("Not implemented yet — status dashboard arrives with EXP-05+ (W2).")
+    """Show cache, cost, and run status."""
+    typer.echo(_PLACEHOLDER.format(exp="07", week="v0.2, status dashboard"))

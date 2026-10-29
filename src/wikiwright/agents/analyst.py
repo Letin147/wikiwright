@@ -176,21 +176,34 @@ def analyze_repo(
     cache_dir: str | Path | None = None,
     llm: LLMClient | None = None,
     workers: int = 3,
+    offline: bool = False,
 ) -> AnalysisReport:
-    """Map-reduce over clusters; per-cluster results cached by file-set hash."""
+    """Map-reduce over clusters; per-cluster results cached by file-set hash.
+
+    offline=True skips every LLM call: all clusters are reported skipped with
+    reason "offline mode" (renderer then emits template-only pages).
+    """
     ref = resolve_source(source)
     cache = Path(cache_dir).expanduser() if cache_dir else Path(".cache/wikiwright")
     cache.mkdir(parents=True, exist_ok=True)
 
     ingest_repo(source, cache_dir=cache)  # idempotent; cache-hit is ~free
-    module_map = cartographize(source, cache_dir=cache)
+    module_map = cartographize(source, cache_dir=cache, offline=offline)
+    if offline:
+        return AnalysisReport(
+            source=module_map.source,
+            skipped=[
+                SkippedModule(module=c.dir_path, reason="offline mode")
+                for c in module_map.clusters
+            ],
+        )
     store = ChunkStore(cache / "ingest.db")
 
     client = llm
-    if client is None:
+    if client is None and not offline:
         client = LLMClient()
-    calls_before = client.calls
-    spent_before = client.spent_usd
+    calls_before = client.calls if client else 0
+    spent_before = client.spent_usd if client else 0.0
 
     clusters = module_map.clusters
     understandings: list[ModuleUnderstanding] = []

@@ -128,3 +128,23 @@ class AnalysisReport(Contract):
     llm_calls: int = 0
     cost_usd: float = 0.0
     cache_hit: bool = False
+
+
+class ScribePage(Contract):
+    """LLM-written prose for one module page; facts must come only from the material."""
+
+    module: str
+    overview_md: str = ""
+    quickstart_md: str = ""
+
+
+class WikiResult(Contract):
+    """Outcome of rendering one wiki vault (EXP-05)."""
+
+    source: str
+    wiki_dir: str
+    commit: str | None = None
+    modules_rendered: int = 0
+    pages: list[str] = []
+    refs_total: int = 0
+    refs_with_line: int = 0
