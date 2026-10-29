@@ -124,4 +124,17 @@
   4. 阈值实证调整：core 判定 in_degree≥3（曾 2 时 flask 63% 文件都算 core）；`__init__.py` 聚合器直接判 core；EXP 指令中 routing.py/wsgi.py 在 flask 3.x 已并入 app.py/不存在，验收按现代布局解释（app.py 为 core ✔ `__main__.py` 为 entry ✔）。
 - **下一步（≤2 条）**：① EXP-04 Analyst map-reduce 深读（结构化抽取契约 + 重试降级 + --budget 实战）；② 把「completion 预算-推理余量」教训写进 prompts/03 的 EXP-04 指令。
 
+### EXP-04：Analyst map-reduce 深读（2026-10-28，含一次返工）
+
+- **目标**：按 Cartographer 聚类并行深读，产出 `ModuleUnderstanding` 契约（每条结论带 `[path:symbol]` 引用，无证据必须 `unsure:true`），失败重试+降级 skipped，--budget 熔断。
+- **实现**：契约族入 `core/contracts.py`（`Conclusion` 带 ref-or-unsure 校验器，pydantic 强制）；`agents/analyst.py`（ThreadPool 并行、契约修复式重试 3 次、引用自动核验：路径在清单+符号真实出现于文件文本、失效引用进 `invalid_refs` 不静默丢弃、按聚类文件集哈希缓存）；CLI `analyze` 命令；`ChunkStore.chunks_for_path`。**指令修正已记 prompts/03**：LangGraph 编排移至 EXP-05（单阶段无 checkpoint 价值，SqliteSaver 需新依赖走 ADR）。
+- **验收结果（flask，全过）**：3 模块理解/0 skipped（≤1 ✔）；**19 条结论、0 unsure、0 失效引用**（自动核验全过）；抽 10 条人工可验：`__init__.py:Flask` 重导出、`globals.py:_cv_app` ContextVar 代理、`app.py:SecureCookieSessionInterface` 默认会话、`__main__.py:main` 入口等——语义准确；**C-09：重跑 0 调用、字节级一致**；测试 **33 passed** 全绿。
+- **成本（真实计费，含返工）**：成功轮 6 调用 $0.037；**返工浪费 $0.024**（首轮 9 调用全空 content）。合计 ≈ ¥0.44。
+- **是否正收益**：是（第二轮达标），但返工暴露了本 EXP 最有价值的教训。
+- **问题与坑（3 个，均已修复）**：
+  1. **扁平 2048 completion 预算全被推理吃光**（返工根因）：分析任务比命名任务推理量大得多，`finish_reason=length`、content 全空、9 调用白烧 $0.024 → 改为**按尝试阶梯放大 (4096, 8192, 16384)**，与修复重试对齐。命名 256/1024 双档、分析 4K/8K/16K 三档——「thinking 模型预算必须给推理留足」已成 SOP；
+  2. **SQLite 跨线程**：worker 里查 `chunks_for_path` 触发 `ProgrammingError` → 改为**主线程预取上下文**，worker 只调 LLM（设计上更干净：连接不跨线程）；
+  3. **LLMClient 计数器竞态**：并行 chat 下 `calls/spent` 累加加锁；测试夹具补根目录 setup.py（地图聚类需 ≥2）；测试替身加 `always` 粘性模式（队列共享被并行聚类竞争消费）。
+- **下一步（≤2 条）**：① EXP-05 Scribe 撰写 + 全管线装配（LangGraph 此时引入 + ADR SqliteSaver）→ v0.1.0（PyPI 账号需就位）；② 金仓库回归测试基线建立（C-09 固化进 CI）。
+
 <!-- 新条目从这里向下追加 -->

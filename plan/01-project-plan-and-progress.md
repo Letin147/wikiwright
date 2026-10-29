@@ -194,6 +194,7 @@
 | 2026-10-28 | W1 前置（提前） | **EXP-01 完全收官**：gh 登录（Letin147）✔；远端 https://github.com/Letin147/wikiwright 建立并推送 ✔；**CI 10/10 全绿**；DeepSeek key 实测无效已标注（待办有效 key） | `reports/01-worklog.md` 当日第二条；GitHub Actions run 40695897565 | 办有效 LLM key → EXP-02 |
 | 2026-10-28 | W1（提前） | **EXP-02 完成**：Scout 摄取管线（克隆/过滤/AST 分块/内容寻址缓存/FTS5）；金仓库三仓验收全过（缓存命中提速 ~1000×，license/FTS/块数全达标）；修复 BSD 无字样识别与跨 source 块碰撞两个缺陷；pytest 15 绿 | `reports/01-worklog.md` EXP-02 条目 | EXP-03 Cartographer 模块地图 |
 | 2026-10-28 | W2（提前） | **EXP-03 完成**：模型路由层（ADR-0001）+ Cartographer 模块地图 + `forge --map` 接通；金仓库验收全过（命名质量高、C-09 确定性零调用、环检测如实）；**首次真实计费 ≈¥0.02**（预算 0.2%）；修复 RemoteDisconnected 击穿/thinking 截断/docs 噪声三坑；pytest 26 绿 | `reports/01-worklog.md` EXP-03 条目 | EXP-04 Analyst |
+| 2026-10-28 | W2（提前） | **EXP-04 完成**（含一次返工）：Analyst map-reduce（并行/契约重试/降级/引用自动核验/缓存）；flask 验收全过（19 结论 0 失效引用、C-09 零调用重跑、33 tests 绿）；thinking 预算 SOP（4K/8K/16K 阶梯）；SQLite 跨线程修复 | `reports/01-worklog.md` EXP-04 条目 | EXP-05 Scribe + 全管线 → v0.1.0 |
 | | | | | |
 
 ---
