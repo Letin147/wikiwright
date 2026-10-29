@@ -201,9 +201,9 @@
 
 ## 9. 下一步行动（Next Actions，≤3 条，随时覆盖）
 
-1. **[W2]** 执行 **EXP-04**（Analyst map-reduce 深读，指令在 `prompts/03` §3）：逐模块结构化抽取（职责/关键实体/接口/关系，每条结论带 `[path:symbol]` 引用）；pydantic 契约校验失败→修复式重试→降级标记。**坑预警（EXP-03 教训）**：max_tokens 给 thinking 推理留足余量（≥1024 起）；首次全量计费跑 flask，--budget 严盯。
-2. **[W2]** **EXP-05**（Scribe 撰写）：wiki/ vault 渲染（index/modules/architecture mermaid），引用锚 `commit:path:symbol`——v0.1.0 发布目标（PyPI 账号此时必须就位）。
-3. **[W1 周日 11-08]** 周自审：§8 更新 + 目录卫生三命令 + `git push`（含此前积压提交）。
+1. **[W2]** 执行 **EXP-05**（Scribe 撰写 + 全管线装配，指令在 `prompts/03` §3）：`wikiwright forge <repo>` 一条命令产出 `wiki/` vault（index + modules 页 + architecture mermaid 图 + 引用列表，锚 `commit:path:symbol`）；**此时引入 LangGraph**（StateGraph 装配 Scout→Cartographer→Analyst→Scribe，SqliteSaver 新依赖走 ADR-0002）；金仓库回归基线入 CI（C-09 固化）。**预算 SOP（EXP-04 教训）**：Scribe 写作 max_tokens ≥8192 起步。
+2. **[W2 末]** **v0.1.0 发布**：版本号 0.1.0、PyPI 发包（**PyPI 账号此时必须就位**——当前唯一账号缺口）、CHANGELOG 初建、W2 DoD 对照收官。
+3. **[W1 周日 11-08]** 周自审：§8 更新 + 目录卫生三命令 + push。
 
 ---
 
