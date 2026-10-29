@@ -195,15 +195,16 @@
 | 2026-10-28 | W1（提前） | **EXP-02 完成**：Scout 摄取管线（克隆/过滤/AST 分块/内容寻址缓存/FTS5）；金仓库三仓验收全过（缓存命中提速 ~1000×，license/FTS/块数全达标）；修复 BSD 无字样识别与跨 source 块碰撞两个缺陷；pytest 15 绿 | `reports/01-worklog.md` EXP-02 条目 | EXP-03 Cartographer 模块地图 |
 | 2026-10-28 | W2（提前） | **EXP-03 完成**：模型路由层（ADR-0001）+ Cartographer 模块地图 + `forge --map` 接通；金仓库验收全过（命名质量高、C-09 确定性零调用、环检测如实）；**首次真实计费 ≈¥0.02**（预算 0.2%）；修复 RemoteDisconnected 击穿/thinking 截断/docs 噪声三坑；pytest 26 绿 | `reports/01-worklog.md` EXP-03 条目 | EXP-04 Analyst |
 | 2026-10-28 | W2（提前） | **EXP-04 完成**（含一次返工）：Analyst map-reduce（并行/契约重试/降级/引用自动核验/缓存）；flask 验收全过（19 结论 0 失效引用、C-09 零调用重跑、33 tests 绿）；thinking 预算 SOP（4K/8K/16K 阶梯）；SQLite 跨线程修复 | `reports/01-worklog.md` EXP-04 条目 | EXP-05 Scribe + 全管线 → v0.1.0 |
+| 2026-10-28 | W2（提前收官） | **EXP-05 完成 = v0.1 功能闭环**：Scribe + LangGraph 管线（ADR-0002）+ vault 渲染 + 离线回归入 CI；click 验收：82 引用独立复检 100%、行号抽查 5/5、重跑字节级一致、38 tests 绿；**全项目六维深度审计通过**（零泄露/无幻觉迹象/一致/干净）。修复 gitignore 未锚定排除整包、离线漏调 API 两坑 | `reports/01-worklog.md` EXP-05 + 审计条目 | v0.1.0 发版（待 PyPI 账号）→ EXP-06 |
 | | | | | |
 
 ---
 
 ## 9. 下一步行动（Next Actions，≤3 条，随时覆盖）
 
-1. **[W2]** 执行 **EXP-05**（Scribe 撰写 + 全管线装配，指令在 `prompts/03` §3）：`wikiwright forge <repo>` 一条命令产出 `wiki/` vault（index + modules 页 + architecture mermaid 图 + 引用列表，锚 `commit:path:symbol`）；**此时引入 LangGraph**（StateGraph 装配 Scout→Cartographer→Analyst→Scribe，SqliteSaver 新依赖走 ADR-0002）；金仓库回归基线入 CI（C-09 固化）。**预算 SOP（EXP-04 教训）**：Scribe 写作 max_tokens ≥8192 起步。
-2. **[W2 末]** **v0.1.0 发布**：版本号 0.1.0、PyPI 发包（**PyPI 账号此时必须就位**——当前唯一账号缺口）、CHANGELOG 初建、W2 DoD 对照收官。
-3. **[W1 周日 11-08]** 周自审：§8 更新 + 目录卫生三命令 + push。
+1. **[v0.1.0 发版，阻塞项=PyPI 账号]** 用户注册 pypi.org 账号并完成 2FA → 我方执行：版本号 0.1.0、CHANGELOG 初建、CI 发版工作流（PYPI_TOKEN 进 Secrets）、`pipx install wikiwright` 冒烟验证。功能已全部就绪（EXP-05 审计通过）。
+2. **[W3]** 执行 **EXP-06**（Critic 证据核验，指令在 `prompts/03` §3）：双通道核验（检索+AST）→ Grounding Score 徽章 → `_evidence.jsonl` 导出；人为注入幻觉论断的回归测试；门禁 = 金仓库 Grounding ≥90%。
+3. **[W1 周日 11-08]** 周自审：§8 更新 + 目录卫生三命令 + push（EXP-01~05 已全部提前完成）。
 
 ---
 

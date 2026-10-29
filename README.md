@@ -4,7 +4,14 @@
 >
 > 一群 LangGraph 多智能体「匠人」，为任意代码库锻造**带证据引用、随 commit 增量更新、可通过 MCP 被任何 Agent 查询**的活维基。
 
-**项目状态：已终选立项（2026-10-28）· 八周路线 2026-11-02 启动 · 纯 CPU · MIT（规划）**
+**项目状态：v0.1 功能闭环（2026-10-28）· EXP-01~05 完成 · 38 tests · 待 v0.1.0 发版（PyPI） · 纯 CPU · MIT**
+
+```bash
+$ uv sync && uv run wikiwright forge pallets/click   # 一条命令锻造完整 wiki vault
+✔ vault forged → wiki/pallets__click
+#   index.md / architecture.md(mermaid) / modules/*.md(证据引用) / index.html(离线单文件)
+#   82 refs 全部独立核验有效 · 重跑字节级一致（C-09） · click 全程成本 < ¥0.5
+```
 
 ```text
 $ wikiwright forge owner/repo
@@ -39,7 +46,8 @@ WikiWright/
 ├── manual/            # 方法域：操作手册(02)、Agent 工程 playbook(04)
 ├── prompts/           # 指令域：EXP 实验指令、AI 结对资产
 ├── reports/           # 日志域：滚动工作卷（>1500 行开新卷）
-└── src/               # 代码域：W1 由 EXP-01 初始化（tests/ examples/ web/ 同期建立）
+├── src/wikiwright/    # 代码域：core/agents/graph/ingest/wiki/mcp/models/eval/cli/web
+└── tests/             # 测试域：38 项（含 fixtures 离线确定性回归）
 ```
 
 隔离规则与卫生铁律见 `manual/02` §12：禁止中间产物入库、缓存进 `.cache/`、输出进用户目录——**目录干净是产品品质的一部分**。

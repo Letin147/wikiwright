@@ -137,4 +137,30 @@
   3. **LLMClient 计数器竞态**：并行 chat 下 `calls/spent` 累加加锁；测试夹具补根目录 setup.py（地图聚类需 ≥2）；测试替身加 `always` 粘性模式（队列共享被并行聚类竞争消费）。
 - **下一步（≤2 条）**：① EXP-05 Scribe 撰写 + 全管线装配（LangGraph 此时引入 + ADR SqliteSaver）→ v0.1.0（PyPI 账号需就位）；② 金仓库回归测试基线建立（C-09 固化进 CI）。
 
+### EXP-05：Scribe + LangGraph 全管线 + vault 渲染（2026-10-28，v0.1 功能闭环）
+
+- **目标**：`wikiwright forge <repo>` 一条命令产出完整 wiki/ vault（index / modules / mermaid 架构 / 引用 / 离线 HTML）；LangGraph 装配 + SqliteSaver（ADR-0002）；回归基线入 CI。
+- **实现**：`agents/scribe.py`（散文仅复述材料、8K/16K 阶梯预算、按理解内容哈希缓存）；`wiki/render.py`（确定性渲染、cluster 级 mermaid、引用最佳努力行号解析、`markdown` 单文件 HTML）；`graph/build.py`（StateGraph 五节点 + SqliteSaver checkpoint，thread_id=slug 支持断点续跑）；CLI forge 终版（--offline/--out/--cache）；`tests/fixtures/mini_repo` + 离线确定性回归入 CI。
+- **验收结果（click，真实计费，全过）**：
+  - 一条命令产出 vault（commit 锚定 `2247b35`）；**82 引用独立复检 100% 有效**（≥90% 门禁）；行号抽查 5/5 精确落在定义行（`core.py:989 → class Command:`）；mermaid 结构合法；index.html 离线单文件含表格与图；**重跑全部 5 个文件字节级一致（C-09）**；
+  - 测试 **38 passed**（scribe/render/离线管线确定性/CLI）+ ruff/import-linter 绿。
+- **成本**：click 全管线（分析+撰写+渲染）+ 误触发见坑 2，合计 < ¥0.5。
+- **问题与坑（2 个，均已修复，均为测试当场抓获）**：
+  1. **`.gitignore` 未锚定模式致包被静默排除**：`wiki/` 规则被 hatchling 遵循，`src/wikiwright/wiki/` 整包未进 wheel（ModuleNotFoundError）→ 运行时产物模式全部锚定根目录（`/wiki/` `/.cache/` 等），已留档 .gitignore 注释；
+  2. **离线管线漏调真实 API**：cartographer 节点未透传 `offline`，`llm=None` 触发内部自建客户端，「离线」测试两次运行各产生真实命名调用（也正是 index.md 不确定的根因）→ 节点显式透传 `offline`；教训入册：**"offline" 语义必须是显式参数，禁止依赖 llm=None 隐式表达**。
+- **已知偏差（记录非缺陷）**：EXP-05 指令提及 Historian 输入（W4 才实现），v0.1 Scribe 仅消费 Analyst；引用行号为最佳努力（symbol 定位），Critic（EXP-06）将补全证据闭环。
+- **下一步（≤2 条）**：① v0.1.0 发版（版本号 + PyPI 发布 + CHANGELOG）——**阻塞项：PyPI 账号**；② EXP-06 Critic（W3）：证据核验闭环 + Grounding Score 徽章。
+
+### 2026-10-28 · 全项目深度审计（EXP-05 收口后，用户指令）
+
+- **范围**：代码、文档、一致性、卫生、安全、真实性（幻觉）六维。
+- **核查结果**：
+  1. **安全**：全历史密钥模式扫描（git grep 全部提交）= 零泄露；`.env`/wiki 输出确认未跟踪（check-ignore 验证）；gitleaks CI 门禁持续生效；
+  2. **真实性**：click 结论 8/8 语义抽样与真实架构吻合（termui 惰性导入、ParamType 体系、CliRunner 隔离、_utils 哨兵等均为事实）；82 引用对仓库克隆原文独立复检 100% 有效；行号抽查 5/5 精确；**未发现幻觉迹象**；
+  3. **一致性**：目录结构与 manual/02 §4 一致（src 十包全部就位）；git 全部 conventional commits；工作日志 140 行（<1500 卷限）；plan §8 六行进展与提交历史一一对应；两份 ADR 与实际依赖一致；
+  4. **卫生**：仓库工作树仅含本次待提交变更；缓存/输出全部 gitignored 且锚定修复；fixture 为有意提交的测试数据；
+  5. **文档陈旧项（本次修复）**：CLI status 占位文案过时（EXP-05 已完成）→ 更新为 v0.2；README 状态/目录树刷新为实况；
+  6. **待办偏差（如实）**：W2 DoD 第②项「PyPI 发 v0.1.0」未达成——阻塞于 PyPI 账号（唯一账号缺口）；EXP-05 的 Historian 输入与 agents/prompts/ 目录外置为计划内后续项。
+- **审计结论**：项目当前状态真实、一致、干净、可审计；无已知未修复缺陷。
+
 <!-- 新条目从这里向下追加 -->
