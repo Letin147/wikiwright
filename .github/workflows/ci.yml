@@ -38,7 +38,8 @@ jobs:
       - name: No forbidden files tracked
         shell: bash
         run: |
-          bad=$(git ls-files | grep -E '(^|/)(wiki|\.cache|__pycache__|wikiwright-output|runs)(/|$)|\.tmp$|^\.env$' || true)
+          # 锚定根目录：git ls-files 输出即根相对路径，不能匹配 src/wikiwright/wiki/ 等源码包
+          bad=$(git ls-files | grep -E '^(wiki|\.cache|__pycache__|wikiwright-output|runs)(/|$)|\.tmp$|^\.env$' || true)
           if [ -n "$bad" ]; then
             echo "::error::Forbidden files tracked (see manual/02 C-12):${bad}"
             exit 1
